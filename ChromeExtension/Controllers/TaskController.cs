@@ -80,5 +80,11 @@ namespace ChromeExtension.Controllers{
             
             return Ok(response);
         }
+
+        [HttpGet("TestApi")]
+        public IActionResult TestApi()
+        {
+            return Ok("Works fine");
+        }
     }
 }

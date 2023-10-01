@@ -14,7 +14,8 @@ namespace ChromeExtension.Handlers{
 
         public string PathGenerator()
         {
-            var path = _env.WebRootPath + "\\VideoRecordings\\";
+            // var path = _env.WebRootPath + "\\VideoRecordings\\";
+            var path = Path.Combine(_env.WebRootPath, "VideoRecordings");
             var generatedPath = string.Empty;
             var rand = new Random();
             if(Directory.Exists(path))
@@ -24,7 +25,7 @@ namespace ChromeExtension.Handlers{
                 {
                     var key = rand.Next(1000,10000).ToString();
 
-                    generatedPath = path + key;
+                    generatedPath = Path.Combine(path, key);
                     status = !Directory.Exists(generatedPath);
                     if(status)
                     {
@@ -37,14 +38,15 @@ namespace ChromeExtension.Handlers{
             }
             var folderKey = rand.Next(1000,10000).ToString();
 
-            var fileInfo = Directory.CreateDirectory(path + folderKey);
+            var fileInfo = Directory.CreateDirectory(Path.Combine(path , folderKey));
 
             return fileInfo.FullName;           
         }
 
         public IList<string> GetAllFilePaths()
         {
-            var path = _env.WebRootPath + "\\VideoRecordings\\";
+            // var path = _env.WebRootPath + "\\VideoRecordings\\";
+            var path = Path.Combine(_env.WebRootPath , "VideoRecordings");
             if(Directory.Exists(path))
             {
                 var directory = new DirectoryInfo(path);
@@ -54,7 +56,7 @@ namespace ChromeExtension.Handlers{
 
                 foreach(var item in directories)
                 {
-                    listItem.Add(item.FullName + "\\recording.mp4");
+                    listItem.Add(Path.Combine(item.FullName, "recording.mp4"));
                 }
 
                 return listItem;
