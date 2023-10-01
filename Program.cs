@@ -13,10 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IMemoryService, MemoryRepository>();
 
-builder.Services.AddSwaggerGen( m => {
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    m.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-});
+
 
 var app = builder.Build();
 
