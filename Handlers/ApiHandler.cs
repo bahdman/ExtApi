@@ -142,6 +142,7 @@ namespace ChromeExtension.Handlers{
                             offset += bytesToCopy;
                         }
 
+
                         return PathHandler(filePath);
                     }
                 }

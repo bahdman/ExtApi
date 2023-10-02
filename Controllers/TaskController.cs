@@ -1,3 +1,4 @@
+using ChromeExtension.Handlers;
 using ChromeExtension.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,8 +82,16 @@ namespace ChromeExtension.Controllers{
         }
 
         [HttpGet("TestApi")]
-        public IActionResult TestApi()
+        public async Task<IActionResult> TestApi()
         {
+            var handler = new Testt();
+            var path = "C:\\Users\\user\\source\\repos\\HNG\\FifthTask\\ChromeExtension\\wwwroot\\VideoRecordings\\1476\\output_audio.wav";
+            if (System.IO.File.Exists(path))
+            {
+                var response = await handler.Transcribe(path);
+                return Ok(response);
+            }
+            
             return Ok("Works fine");
         }
     }
