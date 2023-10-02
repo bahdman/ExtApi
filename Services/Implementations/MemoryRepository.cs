@@ -35,14 +35,14 @@ namespace ChromeExtension.Services.Implementations{
 
                 if(handler.GetAllFilePaths() == null)
                 {
-                    return ApiResponse<IList<string>>.Success(handler.GetAllFilePaths(),"No item found");
+                    return ApiResponse<IList<string>>.Fail("No item found", 404);
                 } 
                 
                 return ApiResponse<IList<string>>.Success(handler.GetAllFilePaths(),"Items retrieved successfully");
             }catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return ApiResponse<IList<string>>.Fail("Failed to retrieve items", 500);
+                return ApiResponse<IList<string>>.Fail("Unable to complete process", 500);
             }
         }
 
@@ -58,10 +58,11 @@ namespace ChromeExtension.Services.Implementations{
                 }
                 var response  = new VideoResponse(){
                     FilePath = handlerResponse,
-                    key = key
+                    key = key,
+                    Status = true
                 };
 
-                return ApiResponse<VideoResponse>.Success(response, "Item has successfully been saved", 200);
+                return ApiResponse<VideoResponse>.Success(response, "Item has successfully been saved", 201);
             }catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -69,23 +70,31 @@ namespace ChromeExtension.Services.Implementations{
             }            
         }
 
-        public ApiResponse<bool> VerifyPath(string fileUrl)
+        public ApiResponse<VideoResponse> VerifyPath(string fileUrl)
         {
             try{
-                var handler = new ApiHandler();
+                var handler = new ApiHandler(_env);
                 // string modifiedUrl = fileUrl.Remove()
                 // C:\\Users\\user\\source\\repos\\HNG\\FifthTask\\ChromeExtension\\wwwroot\\VideoRecordings\\7787
                 // www.bahdman.net/download\\VideoRecordings\\7787
-                if(handler.CheckFilePath(fileUrl))
+                var handlerResponse = handler.CheckFilePath(fileUrl);
+                if(handlerResponse == "not found")
                 {
-                    return ApiResponse<bool>.Success(true, "File exist for download");
+                    return ApiResponse<VideoResponse>.Fail("Video Not Found", 404);
                 }
 
-                return ApiResponse<bool>.Fail("File does not exists", 400);
+                var response = new VideoResponse()
+                {
+                    FilePath = handlerResponse,
+                    key = 0,
+                    Status = true
+                };
+
+                return ApiResponse<VideoResponse>.Success( response, "File exists for download", 200);
             }catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return ApiResponse<bool>.Fail("Unable to complete process", 500);
+                return ApiResponse<VideoResponse>.Fail("Unable to complete process", 500);
             }           
         }
     }

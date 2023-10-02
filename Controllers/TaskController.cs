@@ -71,14 +71,13 @@ namespace ChromeExtension.Controllers{
         public async Task<IActionResult> Download(string fileUrl)
         {
             var response = _memoryService.VerifyPath(fileUrl);
-            if(response.Data == true)
+            if (response.Data == null)
             {
-                byte[] bytes = await System.IO.File.ReadAllBytesAsync(fileUrl);
-                return File(bytes, "video/mp4", "videoRecordings.mp4");
-                
+                return Ok(response);
             }
             
-            return Ok(response);
+            byte[] bytes = await System.IO.File.ReadAllBytesAsync(response.Data.FilePath);
+            return File(bytes, "video/mp4", "videoRecordings.mp4");
         }
 
         [HttpGet("TestApi")]

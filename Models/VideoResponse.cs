@@ -3,5 +3,6 @@ namespace ChromeExtension.Models{
     {
         public string FilePath{get; set;}
         public int key{get; set;}
+        public bool Status{get; set;}
     }
 }

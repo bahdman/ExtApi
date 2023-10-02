@@ -12,57 +12,94 @@ namespace ChromeExtension.Handlers{
             _env = env;
         }
 
+        private string PathHandler(string path)
+        {
+            var envPath = _env.WebRootPath;
+            var siteUrl = "https://bahdman.bsite.net/";
+
+            var charSpacing = string.Empty;
+            var refinedPath = string.Empty;
+
+            if(path.Contains(envPath))
+            {
+                charSpacing = path.Replace(envPath, siteUrl);
+                refinedPath = charSpacing.Replace("\\", "/");
+                return refinedPath;
+            }
+
+            charSpacing = path.Replace(siteUrl, envPath);
+            refinedPath = charSpacing.Replace("/", "\\");
+            // refinedPath = path.Replace(siteUrl, envPath);
+            return refinedPath;
+            // C:\\Users\\user\\source\\repos\\HNG\\FifthTask\\ChromeExtension\\wwwroot\\VideoRecordings\\7787
+        }
+
         public string PathGenerator()
         {
-            // var path = _env.WebRootPath + "\\VideoRecordings\\";
-            var path = Path.Combine(_env.WebRootPath, "VideoRecordings");
-            var generatedPath = string.Empty;
-            var rand = new Random();
-            if(Directory.Exists(path))
-            {
-                var status = true;
-                while(status)
+            try{
+                // var path = _env.WebRootPath + "\\VideoRecordings\\";
+                var path = Path.Combine(_env.WebRootPath, "VideoRecordings");
+                var generatedPath = string.Empty;
+                var rand = new Random();
+                if(Directory.Exists(path))
                 {
-                    var key = rand.Next(1000,10000).ToString();
-
-                    generatedPath = Path.Combine(path, key);
-                    status = !Directory.Exists(generatedPath);
-                    if(status)
+                    var status = true;
+                    while(status)
                     {
-                        Directory.CreateDirectory(generatedPath);
-                        status = false;
-                    }
-                }  
+                        var key = rand.Next(1000,10000).ToString();
 
-                return generatedPath;        
+                        generatedPath = Path.Combine(path, key);
+                        status = !Directory.Exists(generatedPath);
+                        if(status)
+                        {
+                            Directory.CreateDirectory(generatedPath);
+                            status = false;
+                        }
+                    }  
+
+                    return PathHandler(generatedPath);        
+                }
+                var folderKey = rand.Next(1000,10000).ToString();
+
+                var fileInfo = Directory.CreateDirectory(Path.Combine(path , folderKey));
+
+                return PathHandler(fileInfo.FullName);
+                
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "error";
             }
-            var folderKey = rand.Next(1000,10000).ToString();
-
-            var fileInfo = Directory.CreateDirectory(Path.Combine(path , folderKey));
-
-            return fileInfo.FullName;           
+                       
         }
 
         public IList<string> GetAllFilePaths()
         {
-            // var path = _env.WebRootPath + "\\VideoRecordings\\";
-            var path = Path.Combine(_env.WebRootPath , "VideoRecordings");
-            if(Directory.Exists(path))
-            {
-                var directory = new DirectoryInfo(path);
-
-                var directories = directory.GetDirectories().ToList();
-                var listItem = new List<string>();
-
-                foreach(var item in directories)
+            try{
+                var path = Path.Combine(_env.WebRootPath , "VideoRecordings");
+                if(Directory.Exists(path))
                 {
-                    listItem.Add(Path.Combine(item.FullName, "recording.mp4"));
+                    var directory = new DirectoryInfo(path);
+
+                    var directories = directory.GetDirectories().ToList();
+                    var listItem = new List<string>();
+
+                    foreach(var item in directories)
+                    {
+                        listItem.Add(PathHandler(Path.Combine(item.FullName, "recording.mp4")));
+                    }
+
+                    return listItem;
                 }
 
-                return listItem;
-            }
+                return null;
 
-            return null;
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+            
         }
 
         // public string SaveVideo(byte[] bytes, string savePath)
@@ -105,7 +142,7 @@ namespace ChromeExtension.Handlers{
                             offset += bytesToCopy;
                         }
 
-                        return filePath;
+                        return PathHandler(filePath);
                     }
                 }
                 else
@@ -121,14 +158,23 @@ namespace ChromeExtension.Handlers{
         }
 
 
-        public bool CheckFilePath(string filePath)
+        public string CheckFilePath(string filePath)
         {
-            if(Path.Exists(filePath))
-            {
-                return true;
-            }
+            try{
+                var refinedPath = PathHandler(filePath);
+                if(Path.Exists(refinedPath))
+                {
+                    return refinedPath;
+                } 
 
-            return false;
+                return "not found";
+
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "not found";
+            }
+            
         }
 
     }

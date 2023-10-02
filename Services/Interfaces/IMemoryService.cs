@@ -7,6 +7,6 @@ namespace ChromeExtension.Services.Interfaces{
         ApiResponse<VideoResponse> SaveVideo(byte[] byteStream, string filePath, int key);
         // Task<ApiResponse<string>> GetAllVideoPath();
         ApiResponse<IList<string>> GetAllVideoPath();
-        ApiResponse<bool> VerifyPath(string fileUrl);
+        ApiResponse<VideoResponse> VerifyPath(string fileUrl);
     }
 }
