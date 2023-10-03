@@ -71,6 +71,11 @@ namespace ChromeExtension.Controllers{
         [HttpGet("VideoRecordings")]
         public async Task<IActionResult> Download(string fileUrl)
         {
+            if(!fileUrl.Contains("mp4"))
+            {
+                return BadRequest("Wrong url supplied");
+            }
+
             var response = _memoryService.VerifyPath(fileUrl);
             if (response.Data == null)
             {
@@ -81,17 +86,28 @@ namespace ChromeExtension.Controllers{
             return File(bytes, "video/mp4", "videoRecordings.mp4");
         }
 
-        [HttpGet("TestApi")]
-        public async Task<IActionResult> TestApi()
+        [HttpGet("Transcripts")]
+        public async Task<IActionResult> Transcripts(string transcriptUrl)
         {
-            var handler = new Testt();
-            var path = "C:\\Users\\user\\source\\repos\\HNG\\FifthTask\\ChromeExtension\\wwwroot\\VideoRecordings\\1476\\output_audio.wav";
-            if (System.IO.File.Exists(path))
+            if(!transcriptUrl.Contains("srt"))
             {
-                var response = await handler.Transcribe(path);
+                return BadRequest("Wrong url supplied");
+            }
+
+            var response = _memoryService.VerifyPath(transcriptUrl);
+
+            if (response.Data == null)
+            {
                 return Ok(response);
             }
             
+            byte[] bytes = await System.IO.File.ReadAllBytesAsync(response.Data.FilePath);
+            return File(bytes, "text/plain", "trans.srt");
+        }
+
+        [HttpGet("TestApi")]
+        public async Task<IActionResult> TestApi()
+        {            
             return Ok("Works fine");
         }
     }

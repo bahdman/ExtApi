@@ -1,3 +1,5 @@
+using ChromeExtension.Models;
+
 namespace ChromeExtension.Handlers{
     public class ApiHandler
     {
@@ -118,12 +120,14 @@ namespace ChromeExtension.Handlers{
         //     return "failed";
         // }
 
-        public string SaveVideo(byte[] bytes, string savePath, int key)
+        public VideoResponse SaveVideo(byte[] bytes, string savePath, int key)
         {
             try
             {
+                var videoResponse = new VideoResponse();
                 if (Path.Exists(savePath))
                 {
+                    
                     var filePath = Path.Combine(savePath, "recording.mp4");
 
                     FileMode fileMode = key < 1 ? FileMode.Create : FileMode.Append;
@@ -142,19 +146,49 @@ namespace ChromeExtension.Handlers{
                             offset += bytesToCopy;
                         }
 
+                        var test = new AudioHandler(); //Rough work.... would need bg service
+                        var response = test.GenerateAudioFile(filePath);
+                        if(response == true)
+                        {
+                            var transcriptPath = TranscribeAudio(filePath).Result;
 
-                        return PathHandler(filePath);
+                            videoResponse = new VideoResponse()
+                            {
+                                FilePath = filePath,
+                                TranscriptUrl = transcriptPath,
+                                key = key,
+                                Status = true
+                            };
+                        }             
+
+                        return videoResponse;
                     }
                 }
                 else
                 {
-                    return "failed";
+                    videoResponse = new VideoResponse()
+                    {
+                        FilePath = savePath,
+                        TranscriptUrl = "",
+                        key = key,
+                        Status = false
+                    };
+
+                    return videoResponse;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return "error";
+                var videoResponse = new VideoResponse()
+                {
+                    FilePath = savePath,
+                    TranscriptUrl = "",
+                    key = key,
+                    Status = false
+                };
+
+                return videoResponse;
             }
         }
 
@@ -176,6 +210,32 @@ namespace ChromeExtension.Handlers{
                 return "not found";
             }
             
+        }
+
+
+        //TODO:: Add this as a background service
+        public async Task<string> TranscribeAudio(string path)
+        {
+            try{
+                // var refinedPath = path.Replace("")
+                var transcriptHandler = new TranscriptHandler();
+                string transcriptPath = "C:\\Users\\user\\source\\repos\\HNG\\FifthTask\\ChromeExtension\\wwwroot\\Transcript\\trans.srt";
+
+                var responseData = await transcriptHandler.Transcribe(path);
+
+                if(!File.Exists(transcriptPath))
+                {
+                    File.Create(transcriptPath);
+                }
+
+                await File.WriteAllTextAsync(transcriptPath, responseData.ToString());  
+
+                return transcriptPath;
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "";
+            }
         }
 
     }

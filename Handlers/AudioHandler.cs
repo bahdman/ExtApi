@@ -2,12 +2,12 @@ using NAudio.Wave;
 
 namespace ChromeExtension.Handlers{
     public class AudioHandler{
-        private bool GenerateAudioFile(string videoPath)
+        public bool GenerateAudioFile(string videoPath)
         {
             try{
                 string audioFilePath = videoPath.Replace("recording.mp4", "audio.wav");
 
-            // Create a MediaFoundationReader to read audio from the video file
+                // Create a MediaFoundationReader to read audio from the video file
                 using (var reader = new MediaFoundationReader(videoPath))
                 {
                     // Specify the output audio file format (e.g., WAV)

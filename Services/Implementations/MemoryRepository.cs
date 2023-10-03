@@ -50,19 +50,11 @@ namespace ChromeExtension.Services.Implementations{
         {
             try{
                 var handler = new ApiHandler();
+
                 var handlerResponse = handler.SaveVideo(byteStream, savePath, key);
-
-                if(handlerResponse == "failed" || handlerResponse == "error")
-                {
-                    return ApiResponse<VideoResponse>.Fail("Failed to save video", 400);
-                }
-                var response  = new VideoResponse(){
-                    FilePath = handlerResponse,
-                    key = key,
-                    Status = true
-                };
-
-                return ApiResponse<VideoResponse>.Success(response, "Item has successfully been saved", 201);
+                
+                return ApiResponse<VideoResponse>.Success(handlerResponse, "response");
+                
             }catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -80,12 +72,12 @@ namespace ChromeExtension.Services.Implementations{
                 var handlerResponse = handler.CheckFilePath(fileUrl);
                 if(handlerResponse == "not found")
                 {
-                    return ApiResponse<VideoResponse>.Fail("Video Not Found", 404);
+                    return ApiResponse<VideoResponse>.Fail("File Not Found", 404);
                 }
 
                 var response = new VideoResponse()
                 {
-                    FilePath = handlerResponse,
+                    TranscriptUrl = handlerResponse,
                     key = 0,
                     Status = true
                 };
