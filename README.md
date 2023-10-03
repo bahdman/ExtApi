@@ -1,63 +1,97 @@
 # ExtApi
 
-Endpoint Doc (chrome ext)
 
-Quick usage (contains requests and only success responses atm)
+## API Documentation
 
-Url: https://bahdman.bsite.net/swagger
-==== SUMMARY ===
-Methods: {
-StartRecording: GET  => Create and allocates path where video should be 
-stored.
-SaveRecording: POST => Saves recording
-GetAllRecordings GET => Get all video saved paths
-VideoRecordings GET => Downloads Video (specify the path)
-TestApi GET => Tests the api to ensure it works
-}
+### Live Link: (https://bahdman.bsite.net/)
+
+#### StartRecording
+
+- **Endpoint:** `GET api/StartRecording`
+- **Description:** Allocates and creates memory location for the storage of the videos.
+- **Sample Request:** N/A
+- **Response:**
+  - HTTP Status: 201 (Created)
+  - Message: Memory allocation successful
+
+#### SaveRecording
+
+- **Endpoint:** `POST api/SaveRecording`
+- **Description:** Saves video recording.
+- **Sample Request:**
+  ```json
+  POST api/SaveRecording
+  {
+      "byteStreams": [],
+      "savePath": "www.bahdman.bsite.net/VideoRecordings/7787/recording.mp4",
+      "key": 1
+  }
+  ```
+- **Response:**
+  - HTTP Status: 200 (OK)
+  - Message: Video saved successfully
+
+#### GetAllRecordings
+
+- **Endpoint:** `GET api/GetAllRecordings`
+- **Description:** Get all saved recordings.
+- **Sample Request:** N/A
+- **Response:**
+  - HTTP Status: 200 (OK)
+  - Message: List of video paths
+
+#### Download
+
+- **Endpoint:** `GET api/VideoRecordings`
+- **Description:** Downloads video recording.
+- **Sample Request:** `GET api/VideoRecordings?fileUrl={fileUrl}`
+- **Response:**
+  - HTTP Status: 200 (OK)
+  - Message: Video file for download
+
+#### TestApi
+
+- **Endpoint:** `GET api/TestApi`
+- **Description:** Test API endpoint.
+- **Sample Request:** N/A
+- **Response:**
+  - HTTP Status: 200 (OK)
+  - Message: Test API works fine
 
 
-Sample Usage
-Test the api to ensure it works.
-https://bahdman.bsite.net/api/TestApi
-Method : Get
-response : "Works fine"
-Main Methods
-https://bahdman.bsite.net/api/StartRecording  ==> allocates memory and 
-path where video would be saved
-Method : GET
-Success Reponse {
-  "data": "https://bahdman.bsite.net//VideoRecordings/7111",
-  "message": "Memory allocation successful",
-  "statusCode": 201
-}
+### Error Responses
 
-https://bahdman.bsite.net/api/SaveRecording ==> handles saving of the 
-video.
-Method : POST
-request body {
-byteStreams : byte[],
-savePath : " https://bahdman.bsite.net//VideoRecordings/7111",
-key : "0" => chunk count (increment this for every chunk sent)
-}
+#### StartRecording
 
-Success Response{
-FilePath : 
-“https://bahdman.bsite.net//VideoRecordings/7111/recording.mp4”,
-Key : 1,
-Status : true
-}
+- **HTTP Status:** 500 (Internal Server Error)
+- **Message:** Memory allocation failed due to an internal server error.
 
-https://bahdman.bsite.net/api/GetAllRecordings => returns all saved paths
-Method : GET
-Success Response{
-Data : [all saved paths],
-Message: “Items retrieved successfully”,
-StatusCode: 200
-}
+#### SaveRecording
 
-https://bahdman.bsite.net/api/VideoRecordings => downloads specified 
-file(url needed)
-Method : GET
-request{
-fileUrl: “https://bahdman.bsite.net//VideoRecordings/1476/recording.mp4”
-Success Response : returns file
+- **HTTP Status:** 400 (Bad Request)
+- **Message:** Failed to save the video due to invalid data or format.
+
+- **HTTP Status:** 500 (Internal Server Error)
+- **Message:** Failed to save the video due to an internal server error.
+
+#### GetAllRecordings
+
+- **HTTP Status:** 404 (Not Found)
+- **Message:** No video recordings found in the database.
+
+- **HTTP Status:** 500 (Internal Server Error)
+- **Message:** Failed to retrieve video recordings due to an internal server error.
+
+#### Download
+
+- **HTTP Status:** 404 (Not Found)
+- **Message:** The requested video file was not found.
+
+- **HTTP Status:** 500 (Internal Server Error)
+- **Message:** Failed to download the video due to an internal server error.
+
+#### TestApi
+
+- **HTTP Status:** 500 (Internal Server Error)
+- **Message:** Test API encountered an internal server error.
+
